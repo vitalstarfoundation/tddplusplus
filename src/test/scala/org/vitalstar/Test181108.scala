@@ -50,12 +50,17 @@ data_raw.map{ e => e.getString(18).toFloat }.sum
 */
 
 class CSVFileReader {
+  import java.io._
+  import java.util.zip._
   import scala.io.Source
   private var lines: List[String] = null
 
   def this(filename: String) = {
     this()
-    val source = Source.fromFile(filename)
+    val source = Source.fromInputStream(
+      new GZIPInputStream(
+      new BufferedInputStream(
+      new FileInputStream("testdata/test_data.csv.gz"))))
     lines = source.getLines.toList
   }
 
@@ -130,7 +135,7 @@ case class Wow(text:String) {
   }
 
   test("all charges") {
-    val csv = new CSVFileReader("testdata/test_data.csv")
+    val csv = new CSVFileReader("testdata/test_data.csv.gz")
     val sum = csv.collect
               .map{ e => e.get("MonthlyCharges").toFloat }
               .sum

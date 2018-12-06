@@ -26,11 +26,32 @@ val lines = s.getLines.toList
 val csv = new CSVFile("testdata/test_data.csv")
 csv.getRow
 
- * */
+https://docs.scala-lang.org/tour/tour-of-scala.html
 
-class CSVFile {
+import spark.implicits._
+import org.apache.spark.sql.functions._
+import org.apache.spark.sql.SQLContext
+val sqlContext = new SQLContext(sc)
+
+val csv = sqlContext.read
+  .option("header",true)
+  .option("delimiter", ",")
+  .option("escape","\"")
+  .csv("../testdata/test_data.csv.gz")
+
+data_raw.collect.map{ e => e.getString(18).toFloat }.sum
+data_raw.map{ e => e.getString(18).toFloat }.sum
+
+  def findIndex(name: String) : Int = {
+    val fieldname = "customerID,gender,SeniorCitizen,Partner,Dependents,tenure,PhoneService,MultipleLines,InternetService,OnlineSecurity,OnlineBackup,DeviceProtection,TechSupport,StreamingTV,StreamingMovies,Contract,PaperlessBilling,PaymentMethod,MonthlyCharges,TotalCharges,Churn"
+    val fields = fieldname.trim.split(",")
+    fields.indexOf(name)
+  }
+*/
+
+class CSVFileReader {
   import scala.io.Source
-  var lines: List[String] = null
+  private var lines: List[String] = null
 
   def this(filename: String) = {
     this()
@@ -40,8 +61,20 @@ class CSVFile {
 
   def getHeader: Row = new Row(lines(0))
 
-  def getAllRows: List[Row] = {
+  def collect: List[Row] = {
     lines.drop(1).map{ e => new Row(e) }
+  }
+}
+
+object Row {
+  private val IamStaticVar: Int = 1234
+
+  def apply() = {
+    "hello world"
+  }
+
+  def apply(text: String) = {
+    new Row(text)
   }
 }
 
@@ -60,7 +93,19 @@ class Row() {
     row(i)
   }
 
+  def apply() = "haha"
+
   override def toString(): String = row.mkString(",")
+}
+
+case class Wow(text:String) {
+  val row = text.trim.split(",")
+  def get(name: String) : String = {
+    val fieldname = "customerID,gender,SeniorCitizen,Partner,Dependents,tenure,PhoneService,MultipleLines,InternetService,OnlineSecurity,OnlineBackup,DeviceProtection,TechSupport,StreamingTV,StreamingMovies,Contract,PaperlessBilling,PaymentMethod,MonthlyCharges,TotalCharges,Churn"
+    val fields = fieldname.trim.split(",")
+    val i = fields.indexOf(name)
+    row(i)
+  }
 }
 
 
@@ -78,13 +123,32 @@ class Row() {
   test("get field from a row") {
     val r = new Row("7590-VHVEG,Female,0,Yes,No,1,No,No phone service,DSL,No,Yes,No,No,No,No,Month-to-month,Yes,Electronic check,29.85,29.85,No")
     assertEquals("Female", r.get("gender"))
+
+    val w = Row("7590-VHVEG,Female,0,Yes,No,1,No,No phone service,DSL,No,Yes,No,No,No,No,Month-to-month,Yes,Electronic check,29.85,29.85,No")
+    assertEquals("Female", w.get("gender"))
+
   }
 
   test("all charges") {
-    val csv = new CSVFile("testdata/test_data.csv")
-    val sum = csv.getAllRows
+    val csv = new CSVFileReader("testdata/test_data.csv")
+    val sum = csv.collect
               .map{ e => e.get("MonthlyCharges").toFloat }
               .sum
+
+ /*           csv.collect
+              .map{ r => r.getString(18).toFloat }
+              .sum
+
+csv.collect
+  .map{ charge => charge.monthlyCharges }
+  .sum
+
+              csv.collect
+              .map{ _.monthlyCharges }
+              .sum
+
+*/
+
     assertEquals(456117.56, sum, 1e-1)
   }
 }

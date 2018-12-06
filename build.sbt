@@ -33,9 +33,9 @@ base = file(".")).settings(commonSettings).settings(
 name := projname,
 
 libraryDependencies ++= Seq(
-  "org.apache.spark" %% "spark-sql" % "2.0.2",
-  "org.apache.spark" %% "spark-core" % "2.0.2",
-  "org.apache.spark" %% "spark-mllib" %"2.0.2",
+  "org.apache.spark" %% "spark-sql" % "2.3.1",
+  "org.apache.spark" %% "spark-core" % "2.3.1",
+  "org.apache.spark" %% "spark-mllib" %"2.3.1",
   "org.json4s" %% "json4s-native" % "3.2.11",
   "org.json4s" %% "json4s-jackson" % "3.2.11",
   "org.apache.commons" % "commons-lang3" % "3.8",

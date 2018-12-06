@@ -60,7 +60,7 @@ class CSVFileReader {
     val source = Source.fromInputStream(
       new GZIPInputStream(
       new BufferedInputStream(
-      new FileInputStream("testdata/test_data.csv.gz"))))
+      new FileInputStream(filename))))
     lines = source.getLines.toList
   }
 

@@ -45,6 +45,10 @@ libraryDependencies ++= Seq(
   "io.spray" %%  "spray-json" % "1.3.3",
   "com.typesafe.akka" %% "akka-http-spray-json" % "10.1.1",
 
+  "com.lihaoyi" % "requests_2.11" % "0.1.8",
+  "org.scalaj" % "scalaj-http_2.11" % "2.3.0",
+  "com.typesafe.play" %% "play-json" % "2.7.4",
+
   //*********** test only ****************
   "org.mockito" % "mockito-core" % "1.8.5" % "test",
   "junit" % "junit" % "4.10" % "test",

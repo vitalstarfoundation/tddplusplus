@@ -5,6 +5,7 @@ import org.scalatest.junit.JUnitRunner
 import org.junit.Assert._
 import org.junit.runner.RunWith
 
+// https://github.com/scalaj/scalaj-http
 import requests.Response
 import play.api.libs.json._
 import play.api.libs.json.JsLookupResult.jsLookupResultToJsLookup
@@ -13,8 +14,21 @@ import play.api.libs.json.JsValue.jsValueToJsLookup
 @RunWith(classOf[JUnitRunner])
 class TestTrello extends FunSuite with BeforeAndAfterAll {
   val BOARD_ID = "YHMv5s56"
-  val keyValue = "4ac9b4b9148d6219878a27ee0dbe1453"
-  val tokenValue = "fcb485ddab5de34e7de2b19f4e22f2cd8904fbacddfaf6450303d53a7bf1bd43"
+  var appkey = ""
+  var token = ""
+
+  override def beforeAll() {
+    import scala.io.Source
+    val jsonStr =
+          Source
+            .fromFile("testdata/trello.json")
+            .getLines
+            .mkString
+
+    val secret = Holder(jsonStr)
+    appkey = secret.get("appkey").asString()
+    token = secret.get("token").asString()
+  }
 
   // Perform GET request to retrieve Trello board name
   def getTrelloBoard(id: String): Response = {
@@ -36,8 +50,8 @@ class TestTrello extends FunSuite with BeforeAndAfterAll {
         "organization_pluginData" -> "false",
         "myPrefs" -> "false",
         "tags" -> "false",
-        "key" -> keyValue,
-        "token" -> tokenValue)
+        "key" -> appkey,
+        "token" -> token)
     )
     r
   }
@@ -45,8 +59,8 @@ class TestTrello extends FunSuite with BeforeAndAfterAll {
   def getCards(id : String): Response = {
     val r = requests.get("https://api.trello.com/1/boards/" + id + "/cards",
       params = Map(
-        "key" -> keyValue,
-        "token" -> tokenValue)
+        "key" -> appkey,
+        "token" -> token)
     )
     r
   }
@@ -54,8 +68,8 @@ class TestTrello extends FunSuite with BeforeAndAfterAll {
   def getList(id : String): Response = {
     val r = requests.get("https://api.trello.com/1/lists/" + id + "/cards",
       params = Map(
-        "key" -> keyValue,
-        "token" -> tokenValue
+        "key" -> appkey,
+        "token" -> token
       ))
     r
   }
@@ -127,8 +141,8 @@ class TestTrello extends FunSuite with BeforeAndAfterAll {
         "name" -> "Test Create Card",
         "desc" -> "A card created by TDD",
         "idList" -> listID,
-        "key" -> keyValue,
-        "token" -> tokenValue
+        "key" -> appkey,
+        "token" -> token
       )
     )
     assert(r.statusCode == 200)
@@ -141,8 +155,8 @@ class TestTrello extends FunSuite with BeforeAndAfterAll {
 
     val r = requests.get("https://api.trello.com/1/cards/" + cardID,
       params = Map(
-        "key" -> keyValue,
-        "token" -> tokenValue
+        "key" -> appkey,
+        "token" -> token
       ))
     val cardJson = Json.parse(r.text)
     assert( (cardJson \ "name").as[String] == "Test Create Card" )
@@ -155,8 +169,8 @@ class TestTrello extends FunSuite with BeforeAndAfterAll {
     val r = requests.put("https://api.trello.com/1/cards/" + cardID,
       params = Map(
         "name" -> "Test Updated Name2",
-        "key" -> keyValue,
-        "token" -> tokenValue
+        "key" -> appkey,
+        "token" -> token
       ))
     assert(r.statusCode == 200)
   }
@@ -168,8 +182,8 @@ class TestTrello extends FunSuite with BeforeAndAfterAll {
 
     val r_d = requests.delete("https://api.trello.com/1/cards/" + cardID,
       params= Map(
-        "key" -> keyValue,
-        "token" -> tokenValue
+        "key" -> appkey,
+        "token" -> token
       ))
 
     assert(r_d.statusCode == 200)

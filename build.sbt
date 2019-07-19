@@ -46,7 +46,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-http-spray-json" % "10.1.1",
 
   "com.lihaoyi" % "requests_2.11" % "0.1.8",
-  "org.scalaj" % "scalaj-http_2.11" % "2.3.0",
+  "org.scalaj" %% "scalaj-http" % "2.4.2",
   "com.typesafe.play" %% "play-json" % "2.7.4",
 
   //*********** test only ****************
